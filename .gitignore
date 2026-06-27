@@ -39,6 +39,17 @@
 *.out
 *.app
 
+.vs/
+.vscoe/
+bin/
+obj/
+Debug/
+Release/
+*.sln.DotSettings.user
+*.user
+*.VC.db
+*.VC.VC.opendb
+
 # Build directories
 build/
 Build/
