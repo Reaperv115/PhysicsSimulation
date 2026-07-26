@@ -95,7 +95,7 @@ void Engine::Renderer::DrawPrimitiveImpl(const Primitives::Primitive& primitive)
 
 		GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
 
-		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		UINT stride = sizeof(Primitives::Vertex);
 		UINT offset = 0;
 		squarevBuffer.BindBuffer(stride, offset);

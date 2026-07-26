@@ -119,8 +119,8 @@ namespace Primitives
 		Triangle()
 		{
 			verts[0] = Vertex(-0.5, -0.5, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-			verts[1] = Vertex(0.0, 0.5, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-			verts[2] = Vertex(0.5, -0.5, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+			verts[1] = Vertex(0.5, -0.5, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[2] = Vertex(0.0, 0.5, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 			transform.f4_position = { 0.0f, 0.0f, 0.0f, 1.0f };
 			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 			speed = 5000.0f;
@@ -154,7 +154,8 @@ namespace Primitives
 
 	struct Square : public Primitive
 	{
-		Vertex verts[4];
+		static const int numverts = 4;
+		Vertex verts[numverts];
 		Engine::Transform transform;
 		XMVECTOR center = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
 		float orbitradius = 1.0f;
@@ -162,22 +163,22 @@ namespace Primitives
 
 		Square()
 		{
-			verts[0] = Vertex(-0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f);
-			verts[1] = Vertex(0.5f, 0.5f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f);
-			verts[2] = Vertex(-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f);
-			verts[3] = Vertex(0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f);
-			transform.f4_position = { 1.0f, 0.0f, 0.0f, 1.0f };
+			verts[0] = Vertex(-0.5f, -0.5f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f); //0
+			verts[1] = Vertex(0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f); //1
+			verts[2] = Vertex(0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f); //2
+			verts[3] = Vertex(-0.5f, 0.5f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f); //3
 			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 			speed = 10000.0f;
 		}
-		uint16_t indices[6] =
-						{ 0, 1, 2,
-						2, 1, 3};
+		static const int numindices = 6;
+		uint16_t indices[numindices] =
+						{ 2, 1, 0,
+						3, 2, 0};
 
 		virtual const Vertex* GetVertices() const override { return verts; }
 		virtual const uint16_t* GetIndices() const override { return indices; }
-		virtual uint32_t GetVertexCount() const override { return 4; }
-		virtual uint32_t GetIndexCount() const override { return 6; }
+		virtual uint32_t GetVertexCount() const override { return numverts; }
+		virtual uint32_t GetIndexCount() const override { return numindices; }
 		virtual const XMFLOAT4X4 GetWorldMatrix() const override { return transform.worldmatrix; }
 		virtual const PrimitiveType GetType() const override { return PrimitiveType::Square; }
 
