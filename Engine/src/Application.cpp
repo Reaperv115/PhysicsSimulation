@@ -28,16 +28,19 @@ void Engine::Application::OnInitialize(HINSTANCE inst, const ApplicationSpecific
 	gfx = CreateUnique<Graphics>();
 	gfx->InitGraphics(window->GetWindowHandle(), appspec.windowProperties.width, appspec.windowProperties.height);
 
-	renderer = CreateUnique<Renderer>(gfx);
+	camera = CreateShared<Camera>();
+	camera->OnInit();
+	renderer = CreateUnique<Renderer>();
+	renderer->OnInit();
 
 	layerstack.PushLayer(CreateUnique<Engine::AppLayer>());
 	layerstack.PushLayer(CreateUnique<Engine::ImGuiLayer>(window->GetWindowHandle(), 
-		renderer->GetGraphics()->GetDevice(), renderer->GetGraphics()->GetDeviceContext()));
+		GraphicsContext::GetDevice(), GraphicsContext::GetDeviceContext()));
 }
 
 void Engine::Application::OnUpdate()
 {
-	renderer->GetGraphics()->PrepareScene();
+	gfx->PrepareScene();
 
 	Timer timer;
 
@@ -49,7 +52,7 @@ void Engine::Application::OnUpdate()
 		layer->OnUpdate(dt);
 		layer->OnRender();
 	}
-	renderer->GetGraphics()->PresentScene();
+	gfx->PresentScene();
 
 	Input::OnUpdate();
 	window->Update();

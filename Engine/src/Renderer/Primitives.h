@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include "Core.h"
-#include "Transform.h"
+#include "../Entity/Transform.h"
 #include <deque>
 #include <memory>
 
@@ -48,14 +48,14 @@ namespace Primitives
 		float speed = 0.0f;
 		XMVECTOR position = XMVectorZero();
 		XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f};
-		XMMATRIX worldmatrix = XMMatrixIdentity();
+		XMFLOAT4X4 worldmatrix;
 		Engine::Transform transform;
 		PrimitiveType type;
 
 		virtual const Vertex* GetVertices() const = 0;
 		virtual const uint16_t* GetIndices() const = 0;
 		virtual const PrimitiveType GetType() const = 0;
-		virtual const XMMATRIX GetWorldMatrix() const = 0;
+		virtual const XMFLOAT4X4 GetWorldMatrix() const = 0;
 		virtual uint32_t GetVertexCount() const = 0;
 		virtual uint32_t GetIndexCount() const = 0;
 
@@ -79,22 +79,22 @@ namespace Primitives
 			verts[0].x = x;
 			verts[0].y = y;
 			verts[0].z = z;
-			transform.worldmatrix = XMMatrixIdentity();
-			transform.worldmatrix *= XMMatrixTranslation(verts[0].x, verts[0].y, verts[0].z);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslation(verts[0].x, verts[0].y, verts[0].z));
 		}
 		Dot()
 		{
 			verts[0].x = 0.0f;
 			verts[0].y = 0.0f;
 			verts[0].z = 0.0f;
-			transform.worldmatrix = XMMatrixIdentity();
-			transform.worldmatrix *= XMMatrixTranslation(verts[0].x, verts[0].y, verts[0].z);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslation(verts[0].x, verts[0].y, verts[0].z));
 		}
 		uint16_t indices[1] = { 0 };
 		virtual const Vertex* GetVertices() const override { return verts; }
 		virtual const uint16_t* GetIndices() const override { return indices; }
 		virtual const PrimitiveType GetType() const override { return PrimitiveType::Dot; }
-		virtual const XMMATRIX GetWorldMatrix() const override { return transform.worldmatrix; }
+		virtual const XMFLOAT4X4 GetWorldMatrix() const override { return transform.worldmatrix; }
 		virtual uint32_t GetVertexCount() const override { return 1; }
 		virtual uint32_t GetIndexCount() const override { return 1; }
 		virtual void OnUpdate(float dt) override 
@@ -105,7 +105,7 @@ namespace Primitives
 		{
 			transform.f4_position = { x, y, z, 1.0f };
 			XMVECTOR tmp = XMLoadFloat4(&transform.f4_position);
-			transform.worldmatrix = XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp));
 		}
 		
 	};
@@ -122,7 +122,7 @@ namespace Primitives
 			verts[1] = Vertex(0.0, 0.5, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 			verts[2] = Vertex(0.5, -0.5, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 			transform.f4_position = { 0.0f, 0.0f, 0.0f, 1.0f };
-			transform.worldmatrix = XMMatrixIdentity();
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 			speed = 5000.0f;
 		}
 
@@ -132,7 +132,7 @@ namespace Primitives
 		virtual const uint16_t* GetIndices() const override { return indices; }
 		virtual uint32_t GetVertexCount() const override { return 3; }
 		virtual uint32_t GetIndexCount() const override { return 3; }
-		virtual const XMMATRIX GetWorldMatrix() const override { return transform.worldmatrix; }
+		virtual const XMFLOAT4X4 GetWorldMatrix() const override { return transform.worldmatrix; }
 		virtual const PrimitiveType GetType() const override { return PrimitiveType::Triangle; }
 
 		virtual void OnUpdate(float dt) override
@@ -140,16 +140,15 @@ namespace Primitives
 			rotation.y += dt * speed;
 			XMVECTOR tmp = XMVectorSet(transform.f4_position.x, transform.f4_position.y, transform.f4_position.z, transform.f4_position.w);
 			XMStoreFloat4(&transform.f4_position, tmp);
-			transform.worldmatrix = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)
-								  * XMMatrixTranslationFromVector(tmp);
-			//transform.worldmatrix = XMMatrixInverse(nullptr, transform.worldmatrix);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)
+								  * XMMatrixTranslationFromVector(tmp));
 		}
 
 		virtual void SetPosition(float x, float y, float z) override
 		{
 			transform.f4_position = { x, y, z, 1.0f };
 			XMVECTOR tmp = XMLoadFloat4(&transform.f4_position);
-			transform.worldmatrix = XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp));
 		}
 	};
 
@@ -168,7 +167,7 @@ namespace Primitives
 			verts[2] = Vertex(-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f);
 			verts[3] = Vertex(0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f, 1.0f);
 			transform.f4_position = { 1.0f, 0.0f, 0.0f, 1.0f };
-			transform.worldmatrix = XMMatrixIdentity();
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 			speed = 10000.0f;
 		}
 		uint16_t indices[6] =
@@ -179,7 +178,7 @@ namespace Primitives
 		virtual const uint16_t* GetIndices() const override { return indices; }
 		virtual uint32_t GetVertexCount() const override { return 4; }
 		virtual uint32_t GetIndexCount() const override { return 6; }
-		virtual const XMMATRIX GetWorldMatrix() const override { return transform.worldmatrix; }
+		virtual const XMFLOAT4X4 GetWorldMatrix() const override { return transform.worldmatrix; }
 		virtual const PrimitiveType GetType() const override { return PrimitiveType::Square; }
 
 		virtual void OnUpdate(float dt) override
@@ -196,20 +195,20 @@ namespace Primitives
 
 			XMVECTOR newpos = center + orbitoffset;
 			
-			transform.worldmatrix = XMMatrixTranslationFromVector(newpos);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslationFromVector(newpos));
 		}
 		virtual void SetPosition(float x, float y, float z) override
 		{
 			transform.f4_position = { x, y, z, 1.0f };
 			XMVECTOR tmp = XMLoadFloat4(&transform.f4_position);
-			transform.worldmatrix = XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp));
 		}
 
 	}; 
 
 	struct Cube : public Primitive
 	{
-		Vertex vertices[24];
+		Vertex verts[24];
 		uint16_t indices[36] =
 		{
 			0, 1, 2, 2, 1, 3,       // Front face
@@ -222,49 +221,49 @@ namespace Primitives
 		Cube()
 		{
 			// Front face(z = -0.5) - Red
-			vertices[0] = Vertex(-0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
-			vertices[1] = Vertex(0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
-			vertices[2] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
-			vertices[3] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[0] = Vertex(-0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[1] = Vertex(0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[2] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[3] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
 
 			// Back face (z = +0.5) - Green
-			vertices[4] = Vertex(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
-			vertices[5] = Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
-			vertices[6] = Vertex(0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
-			vertices[7] = Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[4] = Vertex(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[5] = Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[6] = Vertex(0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[7] = Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
 
 			// Left face (x = -0.5) - Blue
-			vertices[8] = Vertex(-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
-			vertices[9] = Vertex(-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
-			vertices[10] = Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f);
-			vertices[11] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[8] = Vertex(-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
+			verts[9] = Vertex(-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f);
+			verts[10] = Vertex(-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f);
+			verts[11] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f);
 
 			// Right face (x = +0.5) - Yellow
-			vertices[12] = Vertex(0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
-			vertices[13] = Vertex(0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
-			vertices[14] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
-			vertices[15] = Vertex(0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
+			verts[12] = Vertex(0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
+			verts[13] = Vertex(0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
+			verts[14] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
+			verts[15] = Vertex(0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f);
 
 			// Top face (y = +0.5) - Cyan
-			vertices[16] = Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
-			vertices[17] = Vertex(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
-			vertices[18] = Vertex(-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
-			vertices[19] = Vertex(0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
+			verts[16] = Vertex(-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
+			verts[17] = Vertex(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
+			verts[18] = Vertex(-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
+			verts[19] = Vertex(0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 			// Bottom face (y = -0.5) - Magenta
-			vertices[20] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
-			vertices[21] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
-			vertices[22] = Vertex(-0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
-			vertices[23] = Vertex(0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
+			verts[20] = Vertex(-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
+			verts[21] = Vertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
+			verts[22] = Vertex(-0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
+			verts[23] = Vertex(0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f, 1.0f);
 			position = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
-			worldmatrix = XMMatrixIdentity();
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 			speed = 15000.0f;
 		}
 		Engine::Transform transform;
 
-		virtual const XMMATRIX GetWorldMatrix() const override { return transform.worldmatrix; }
+		virtual const XMFLOAT4X4 GetWorldMatrix() const override { return transform.worldmatrix; }
 
-		virtual const Vertex* GetVertices() const override { return vertices; }
+		virtual const Vertex* GetVertices() const override { return verts; }
 		virtual const uint16_t* GetIndices() const override { return indices; }
 		virtual uint32_t GetVertexCount() const override { return 24; }
 		virtual uint32_t GetIndexCount() const override { return 36; }
@@ -275,15 +274,15 @@ namespace Primitives
 			rotation.y += dt * speed;
 			XMVECTOR tmp;
 			tmp = XMLoadFloat4(&transform.f4_position);
-			transform.worldmatrix = XMMatrixInverse(nullptr, transform.worldmatrix);
-			transform.worldmatrix = XMMatrixTranslationFromVector(tmp) * 
-									XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&transform.worldmatrix)));
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslationFromVector(tmp) * 
+									XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z));
 		}
 		virtual void SetPosition(float x, float y, float z) override
 		{
 			transform.f4_position = { x, y, z, 1.0f };
 			XMVECTOR tmp = XMLoadFloat4(&transform.f4_position);
-			transform.worldmatrix = XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp);
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity() * XMMatrixTranslationFromVector(tmp));
 		}
 	}; 
 

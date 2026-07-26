@@ -14,8 +14,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Engine::ApplicationSpecification appSpec;
 	appSpec.name = L"Application";
-	appSpec.windowProperties.width = 1920;
-	appSpec.windowProperties.height = 1080;
 
 
 	auto app = Engine::CreateUnique<Engine::Application>(hInstance, appSpec);

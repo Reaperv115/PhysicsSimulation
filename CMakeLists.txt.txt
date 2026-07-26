@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.20)
+project(PhysicsEngine)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# find directx
+find_package(directx-headers CONFIG REQUIRED)
+
+file(GLOB_RECURSE ENGINE_SOURCES
+    "Engine/src/*.cpp"
+    "Engine/src/**/*.cpp"
+)
+
+file(GLOB_RECURSE ENGINE_HEADERS
+    "Engine/src/*.h"
+    "Engine/src/**/*.h"
+)
+
+add_library(Engine STATIC ${ENGINE_SOURCES})
+
+target_include_directories(Engine PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/vendor
+)
+
+# link directx
+target_link_libraries(Engine PUBLIC
+    d3d11.lib
+    dxgi.lib
+    d3dcompiler.lib
+)
+
+file(GLOB_RECURSE APP_SOURCES
+    "APP/src/*.cpp"
+    "APP/src/**/*.cpp"
+)
+
+add_executable(PhysicsSimulation %{APP_SOURCES})
+
+target_link_libraries(PhysicsSimulation PRIVATE Engine)
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PhysicsSimulation)

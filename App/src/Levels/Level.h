@@ -8,6 +8,9 @@
 #include "../AppLayers/ImGuiLayer.h"
 #include "ObjSystem/ObjSystem.h"
 
+
+
+
 namespace App
 {
 	class Level
@@ -21,8 +24,6 @@ namespace App
 		void OnRender();
 
 	private:
-		/*Engine::Deque<Engine::Unique<Primitives::Primitive>> objects;
-		Engine::Deque<Engine::Unique<Primitives::Dot>> stars;*/
-
+		Engine::Camera* camera;
 	};
 }

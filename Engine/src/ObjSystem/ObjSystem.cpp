@@ -8,7 +8,6 @@ void Engine::ObjSystem::Initialize()
 	Primitives::CreateStarField();
 	InitializeScene();
 
-	//AddShape();
 }
 
 void Engine::ObjSystem::AddShape()
@@ -23,4 +22,8 @@ void Engine::ObjSystem::InitializeScene()
 	objects.push_back(CreateUnique<Primitives::Triangle>());
 	objects.push_back(CreateUnique<Primitives::Square>());
 	objects.push_back(CreateUnique<Primitives::Cube>());
+
+	auto model = CreateUnique<Model>("src/Models/Cube.obj");
+	model->OnInit();
+	models.push_back(std::move(model));
 }

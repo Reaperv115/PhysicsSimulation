@@ -17,28 +17,24 @@ void App::Level::OnInit()
 
 void App::Level::OnUpdate(float dt)
 {
-	
-	auto& camera = Engine::Renderer::GetInstance()->GetCamera();
-	if (camera)
+	if (Engine::Input::IsKeyDown('W'))
 	{
-		if (Engine::Input::IsKeyDown('W'))
-		{
-			camera->MoveForward();
-		}
-		if (Engine::Input::IsKeyDown('S'))
-		{
-			camera->MoveBackward();
-		}
-		if (Engine::Input::IsKeyDown('A'))
-		{
-			camera->MoveLeft();
-		}
-		if (Engine::Input::IsKeyDown('D'))
-		{
-			camera->MoveRight();
-		}
-		camera->OnUpdate(dt);
+		Engine::Camera::GetInstance()->MoveForward();
+		
 	}
+	if (Engine::Input::IsKeyDown('S'))
+	{
+		Engine::Camera::GetInstance()->MoveBackward();
+	}
+	if (Engine::Input::IsKeyDown('A'))
+	{
+		Engine::Camera::GetInstance()->MoveLeft();
+	}
+	if (Engine::Input::IsKeyDown('D'))
+	{
+		Engine::Camera::GetInstance()->MoveRight();
+	}
+	Engine::Camera::GetInstance()->OnUpdate(dt);
 
 	for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
 	{
@@ -55,14 +51,18 @@ void App::Level::OnRender()
 {
 	for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
 	{
-		Engine::Renderer::GetInstance()->DrawPrimitive(*obj);
+		Engine::Renderer::DrawPrimitive(*obj);
 	}
 
 	for (auto& star : Primitives::stars)
 	{
-		Engine::Renderer::GetInstance()->DrawPrimitive(*star);
+		Engine::Renderer::DrawPrimitive(*star);
 	}
 
+	for (auto& model : Engine::ObjSystem::GetInstance()->GetModels())
+	{
+		model->OnRender();
+	}
 }
 
 

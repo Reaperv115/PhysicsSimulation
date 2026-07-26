@@ -4,19 +4,15 @@
 
 Engine::Renderer::Renderer()
 {
-
+	//OnInit();
+	instance = this;
 }
 
 
-Engine::Renderer::Renderer(Unique<Graphics>& graphics)
-	:gfx(std::move(graphics))
+Engine::Renderer::Renderer(float aspectratio)
 {
-	if (!instance)
-		instance = this;
-
-
-	FoV = XMConvertToRadians(90.0f);
-	OnInit();
+	//OnInit(aspectratio);
+	instance = this;
 }
 
 Engine::Renderer::~Renderer()
@@ -24,45 +20,28 @@ Engine::Renderer::~Renderer()
 	
 }
 
-void Engine::Renderer::OnInit()
-{
-	if (!gfx)
-		throw std::runtime_error("Graphics pointer is null in Renderer::OnInit");
 
-	
-	constantBuffer.Create(gfx->GetDevice(), &wvp);
-	constantBuffer.BindVS(gfx->GetDeviceContext());
+void Engine::Renderer::OnInit(float aspectratio /*= 1440.0f / 1080.0f*/)
+{
+	AspectRatio = aspectratio;
+
+	FoV = XMConvertToRadians(90.0f);
+	constantBuffer.Create(GraphicsContext::GetDevice(), &wvp);
+	constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
 
 	InitPrimitives();
 
-	camera = CreateUnique<Camera>(FoV, gfx->GetWidth()/gfx->GetHeight());
-
+	vertexshader = VertexShader("src/Shaders/VertexShader.hlsl");
+	pixelshader = PixelShader("src/Shaders/PixelShader.hlsl");
 
 }
 
-void Engine::Renderer::CreateVertexBuffer(void* data, UINT elementbyteSize, int numElements, ComPtr<ID3D11Buffer>& outBuffer)
+void Engine::Renderer::DrawPrimitive(const Primitives::Primitive& primitive)
 {
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.ByteWidth = elementbyteSize * numElements;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	bufferData.pSysMem = data;
-	gfx->GetDevice()->CreateBuffer(&bufferDesc, data ? &bufferData : nullptr, outBuffer.GetAddressOf());
+	instance->DrawPrimitiveImpl(primitive);
 }
 
-void Engine::Renderer::CreateIndexBuffer(void* data, UINT elementbyteSize, int numElements, ComPtr<ID3D11Buffer>& outBuffer)
-{
-	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bufferDesc.ByteWidth = elementbyteSize * numElements;
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
 
-	bufferData.pSysMem = data;
-	gfx->GetDevice()->CreateBuffer(&bufferDesc, data ? &bufferData : nullptr, outBuffer.GetAddressOf());
-}
 
 void Engine::Renderer::DrawPrimitiveImpl(const Primitives::Primitive& primitive)
 {
@@ -70,110 +49,108 @@ void Engine::Renderer::DrawPrimitiveImpl(const Primitives::Primitive& primitive)
 	{
 	case Primitives::PrimitiveType::Dot:
 	{
-		wvp = camera->GetMVP(primitive.GetWorldMatrix());
+		wvp = Camera::GetWorldViewProjection(primitive.GetWorldMatrix());
 
-		constantBuffer.Update(gfx->GetDeviceContext(), &wvp);
-		constantBuffer.BindVS(gfx->GetDeviceContext());
+		constantBuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
+		constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
 
-		gfx->GetDeviceContext()->IASetInputLayout(gfx->GetInputLayout().Get());
+		GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
 
-
-		gfx->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 		UINT stride = sizeof(Primitives::Vertex);
 		UINT offset = 0;
-		gfx->GetDeviceContext()->IASetVertexBuffers(0, 1, pointBuffer.GetAddressOf(), &stride, &offset);
-		gfx->GetDeviceContext()->IASetIndexBuffer(pointindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		gfx->GetDeviceContext()->VSSetShader(gfx->GetVertexShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->PSSetShader(gfx->GetPixelShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
+		pointvBuffer.BindBuffer(stride, offset);
+		pointiBuffer.BindBuffer(DXGI_FORMAT_R16_UINT);
+		vertexshader.Bind();
+		pixelshader.Bind();
+		GraphicsContext::GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
 		break;
 	}
 	case Primitives::PrimitiveType::Triangle:
 	{
-		wvp = camera->GetMVP(primitive.GetWorldMatrix());
+		wvp = Camera::GetWorldViewProjection(primitive.GetWorldMatrix());
 
-		constantBuffer.Update(gfx->GetDeviceContext(), &wvp);
-		constantBuffer.BindVS(gfx->GetDeviceContext());
+		constantBuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
+		constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
 
-		gfx->GetDeviceContext()->IASetInputLayout(gfx->GetInputLayout().Get());
+		GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
 
 
-		gfx->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		UINT stride = sizeof(Primitives::Vertex);
 		UINT offset = 0;
-		gfx->GetDeviceContext()->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
-		gfx->GetDeviceContext()->IASetIndexBuffer(triangleindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		gfx->GetDeviceContext()->VSSetShader(gfx->GetVertexShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->PSSetShader(gfx->GetPixelShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
+		trianglevBuffer.BindBuffer(stride, offset);
+		triangleiBuffer.BindBuffer(DXGI_FORMAT_R16_UINT);
+		vertexshader.Bind();
+		pixelshader.Bind();
+		GraphicsContext::GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
 		break;
 	}
 	case Primitives::PrimitiveType::Square:
 	{
-		wvp = camera->GetMVP(primitive.GetWorldMatrix());
+		wvp = Camera::GetWorldViewProjection(primitive.GetWorldMatrix());
 
-		constantBuffer.Update(gfx->GetDeviceContext(), &wvp);
-		constantBuffer.BindVS(gfx->GetDeviceContext());
+		constantBuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
+		constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
 
-		gfx->GetDeviceContext()->IASetInputLayout(gfx->GetInputLayout().Get());
+		GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
 
-
-		gfx->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		UINT stride = sizeof(Primitives::Vertex);
 		UINT offset = 0;
-		gfx->GetDeviceContext()->IASetVertexBuffers(0, 1, squareBuffer.GetAddressOf(), &stride, &offset);
-		gfx->GetDeviceContext()->IASetIndexBuffer(squareindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		gfx->GetDeviceContext()->VSSetShader(gfx->GetVertexShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->PSSetShader(gfx->GetPixelShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
+		squarevBuffer.BindBuffer(stride, offset);
+		squareiBuffer.BindBuffer(DXGI_FORMAT_R16_UINT);
+
+		vertexshader.Bind();
+		pixelshader.Bind();
+		GraphicsContext::GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
 		break;
 	}
 	case Primitives::PrimitiveType::Cube:
 	{
-		wvp = camera->GetMVP(primitive.GetWorldMatrix());
+		wvp = Camera::GetWorldViewProjection(primitive.GetWorldMatrix());
 
-		constantBuffer.Update(gfx->GetDeviceContext(), &wvp);
-		constantBuffer.BindVS(gfx->GetDeviceContext());
+		constantBuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
+		constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
 
-		gfx->GetDeviceContext()->IASetInputLayout(gfx->GetInputLayout().Get());
+		GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
 
-
-		gfx->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		UINT stride = sizeof(Primitives::Vertex);
 		UINT offset = 0;
-		gfx->GetDeviceContext()->IASetVertexBuffers(0, 1, cubeBuffer.GetAddressOf(), &stride, &offset);
-		gfx->GetDeviceContext()->IASetIndexBuffer(cubeindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		gfx->GetDeviceContext()->VSSetShader(gfx->GetVertexShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->PSSetShader(gfx->GetPixelShader().Get(), nullptr, 0);
-		gfx->GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
+		cubevBuffer.BindBuffer(stride, offset);
+		cubeiBuffer.BindBuffer(DXGI_FORMAT_R16_UINT);
+		vertexshader.Bind();
+		pixelshader.Bind();
+		GraphicsContext::GetDeviceContext()->DrawIndexed(primitive.GetIndexCount(), 0, 0);
 		break;
 	}
 	}
 }
 
-void Engine::Renderer::DrawTriangleImpl()
+void Engine::Renderer::DrawTriangle()
 {
-	wvp = camera->GetMVP(Primitives::triangle->GetWorldMatrix());
-
-	constantBuffer.Update(gfx->GetDeviceContext(), &wvp);
-	constantBuffer.BindVS(gfx->GetDeviceContext());
-
-	gfx->GetDeviceContext()->IASetInputLayout(gfx->GetInputLayout().Get());
-
-
-	gfx->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	UINT stride = sizeof(Primitives::Vertex);
-	UINT offset = 0;
-	gfx->GetDeviceContext()->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
-	gfx->GetDeviceContext()->IASetIndexBuffer(triangleindexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-	gfx->GetDeviceContext()->VSSetShader(gfx->GetVertexShader().Get(), nullptr, 0);
-	gfx->GetDeviceContext()->PSSetShader(gfx->GetPixelShader().Get(), nullptr, 0);
-	gfx->GetDeviceContext()->DrawIndexed(Primitives::triangle->GetIndexCount(), 0, 0);
+	instance->DrawTriangleImpl();
 }
 
-Engine::Renderer* Engine::Renderer::GetInstance()
+
+void Engine::Renderer::DrawTriangleImpl()
 {
-	return instance;
+	wvp = Camera::GetWorldViewProjection(Primitives::triangle->GetWorldMatrix());
+
+	constantBuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
+	constantBuffer.BindVS(GraphicsContext::GetDeviceContext());
+
+	GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
+
+	GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	UINT stride = sizeof(Primitives::Vertex);
+	UINT offset = 0;
+	trianglevBuffer.BindBuffer(stride, offset);
+	triangleiBuffer.BindBuffer(DXGI_FORMAT_R16_UINT);
+	vertexshader.Bind();
+	pixelshader.Bind();
+	GraphicsContext::GetDeviceContext()->DrawIndexed(Primitives::triangle->GetIndexCount(), 0, 0);
 }
 
 void Engine::Renderer::InitPrimitives()
@@ -183,34 +160,17 @@ void Engine::Renderer::InitPrimitives()
 	Primitives::square = CreateUnique<Primitives::Square>();
 	Primitives::cube = CreateUnique<Primitives::Cube>();
 
-	if (gfx)
-	{
-		CreateVertexBuffer(Primitives::star->verts, sizeof(Primitives::Vertex), Primitives::star->GetVertexCount(), pointBuffer);
-		CreateVertexBuffer(Primitives::triangle->verts, sizeof(Primitives::Vertex), Primitives::triangle->GetVertexCount(), triangleBuffer);
-		CreateVertexBuffer(Primitives::square->verts, sizeof(Primitives::Vertex), Primitives::square->GetVertexCount(), squareBuffer);
-		CreateVertexBuffer(Primitives::cube->vertices, sizeof(Primitives::Vertex), Primitives::cube->GetVertexCount(), cubeBuffer);
+	pointvBuffer = VertexBuffer(Primitives::star->verts, sizeof(Primitives::Vertex), Primitives::star->GetVertexCount());
+	trianglevBuffer = VertexBuffer(Primitives::triangle->verts, sizeof(Primitives::Vertex), Primitives::triangle->GetVertexCount());
+	squarevBuffer = VertexBuffer(Primitives::square->verts, sizeof(Primitives::Vertex), Primitives::square->GetVertexCount());
+	cubevBuffer = VertexBuffer(Primitives::cube->verts, sizeof(Primitives::Vertex), Primitives::cube->GetVertexCount());
 
-		CreateIndexBuffer(Primitives::triangle->indices, sizeof(uint16_t), Primitives::triangle->GetIndexCount(), triangleindexBuffer);
-		CreateIndexBuffer(Primitives::square->indices, sizeof(uint16_t), Primitives::square->GetIndexCount(), squareindexBuffer);
-		CreateIndexBuffer(Primitives::cube->indices, sizeof(uint16_t), Primitives::cube->GetIndexCount(), cubeindexBuffer);
-		CreateIndexBuffer(Primitives::star->indices, sizeof(uint16_t), Primitives::star->GetIndexCount(), pointindexBuffer);
-	}
+	pointiBuffer = IndexBuffer(Primitives::star->indices, sizeof(uint16_t), Primitives::star->GetIndexCount());
+	triangleiBuffer = IndexBuffer(Primitives::triangle->indices, sizeof(uint16_t), Primitives::triangle->GetIndexCount());
+	squareiBuffer = IndexBuffer(Primitives::square->indices, sizeof(uint16_t), Primitives::square->GetIndexCount());
+	cubeiBuffer = IndexBuffer(Primitives::cube->indices, sizeof(uint16_t), Primitives::cube->GetIndexCount());
+
 }
 
-void Engine::Renderer::DrawPrimitive(const Primitives::Primitive& primitive)
-{
-	instance->DrawPrimitiveImpl(primitive);
-}
 
-void Engine::Renderer::DrawTriangle()
-{
-	instance->DrawTriangleImpl();
-}
-
-void Engine::Renderer::SetInstance(Renderer* renderer)
-{
-	instance = renderer;
-}
-
-Engine::Renderer* Engine::Renderer::instance;
-
+Engine::Renderer* Engine::Renderer::instance = nullptr;
