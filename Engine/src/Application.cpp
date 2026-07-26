@@ -26,7 +26,7 @@ void Engine::Application::OnInitialize(HINSTANCE inst, const ApplicationSpecific
 	Input::Initialize(window->GetWindowHandle());
 
 	gfx = CreateUnique<Graphics>();
-	gfx->InitGraphics(window->GetWindowHandle(), appspec.windowProperties.width, appspec.windowProperties.height);
+	gfx->InitGraphics(window->GetWindowHandle(), (float)appspec.windowProperties.width, (float)appspec.windowProperties.height);
 
 	camera = CreateShared<Camera>();
 	camera->OnInit();

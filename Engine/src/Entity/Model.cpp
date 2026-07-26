@@ -54,7 +54,7 @@ void Engine::Model::DrawModel()
 	wvp = Camera::GetWorldViewProjection(transform.worldmatrix);
 
 	GraphicsContext::GetDeviceContext()->IASetInputLayout(vertexshader.GetInputLayout().Get());
-	GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	GraphicsContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	constantbuffer.Update(GraphicsContext::GetDeviceContext(), &wvp);
 	constantbuffer.BindVS(GraphicsContext::GetDeviceContext());

@@ -28,7 +28,7 @@ namespace Primitives
 		float x, y, z;      // Position
 		float r, g, b, a;   // Color
 
-		Vertex()
+		Vertex() : x(0), y(0), z(0), r(1), g(1), b(1), a(1)
 		{
 
 		}
