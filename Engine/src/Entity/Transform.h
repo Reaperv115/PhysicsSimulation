@@ -7,7 +7,7 @@ namespace Engine
 {
 	struct Transform
 	{
-		Transform() : f4_position(1.0f, 0.0f, 0.0f, 1.0f),
+		Transform() : f4_position(0.0f, 0.0f, 0.0f, 1.0f),
 			f3_rotation(0.0f, 0.0f, 0.0f),
 			f_scalar(1.0f) 
 		{

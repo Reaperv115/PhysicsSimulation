@@ -11,6 +11,7 @@ C:\Dev\PhysicsEngine\Engine\src\Camera\Camera.cpp;C:\Dev\PhysicsEngine\bin-int\x
 C:\Dev\PhysicsEngine\Engine\src\Graphics\Graphics.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\Graphics.obj
 C:\Dev\PhysicsEngine\Engine\src\AppWindow.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\AppWindow.obj
 C:\Dev\PhysicsEngine\Engine\src\epch.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\epch.obj
+C:\Dev\PhysicsEngine\Engine\src\Renderer\SkyBox\SkyBox.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\SkyBox.obj
 C:\Dev\PhysicsEngine\Engine\src\Renderer\VertexBuffer.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\VertexBuffer.obj
 C:\Dev\PhysicsEngine\Engine\src\Shaders\PixelShader.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\PixelShader.obj
 C:\Dev\PhysicsEngine\Engine\src\Shaders\Shader.cpp;C:\Dev\PhysicsEngine\bin-int\x64-Debug\Engine\Shader.obj

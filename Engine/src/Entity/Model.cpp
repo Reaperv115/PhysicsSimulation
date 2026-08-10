@@ -4,7 +4,7 @@
 #include <sstream>
 
 Engine::Model::Model(const std::string& filepath)
-	: filepath(filepath)
+	: filepath(filepath), transform(Transform())
 {
 
 }
@@ -35,7 +35,7 @@ void Engine::Model::OnInit()
 	indexbuffer = IndexBuffer(indices.data(), sizeof(uint16_t), indices.size());
 
 
-	XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslationFromVector(XMVectorSet(0.0f, 2.0f, 0.0f, 1.0f)));
+	XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 }
 
 void Engine::Model::OnUpdate(float dt)

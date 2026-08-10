@@ -276,8 +276,8 @@ namespace Primitives
 			XMVECTOR tmp;
 			tmp = XMLoadFloat4(&transform.f4_position);
 			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&transform.worldmatrix)));
-			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslationFromVector(tmp) * 
-									XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z));
+			XMStoreFloat4x4(&transform.worldmatrix, XMMatrixTranslationFromVector(tmp) *
+				XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z));
 		}
 		virtual void SetPosition(float x, float y, float z) override
 		{

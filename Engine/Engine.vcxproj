@@ -152,6 +152,7 @@
     <ClInclude Include="src\AppWindow.h" />
     <ClInclude Include="src\epch.h" />
     <ClInclude Include="src\Renderer\Primitives.h" />
+    <ClInclude Include="src\Renderer\SkyBox\SkyBox.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\Resource.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="src\epch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Renderer\SkyBox\SkyBox.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Shaders\PixelShader.cpp" />
     <ClCompile Include="src\Shaders\Shader.cpp" />
