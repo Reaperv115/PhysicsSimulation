@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 
-Engine::Model::Model(const std::string& filepath)
-	: filepath(filepath), transform(Transform())
+Engine::Model::Model(const std::string& filepath, const XMMATRIX& worldmatrix)
+	: filepath(filepath), transform(worldmatrix)
 {
 
 }
@@ -35,7 +35,7 @@ void Engine::Model::OnInit()
 	indexbuffer = IndexBuffer(indices.data(), sizeof(uint16_t), indices.size());
 
 
-	XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
+	//XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 }
 
 void Engine::Model::OnUpdate(float dt)

@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\App\\Level.obj",
+            "outputs": [
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\App\\Level.cpp.obj.dt.module.json",
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\App\\Level.cpp.obj.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}

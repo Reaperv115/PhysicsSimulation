@@ -21,7 +21,7 @@ namespace Engine
 	class Model : public Entity
 	{
 	public:
-		Model(const std::string& filepath);
+		Model(const std::string& filepath, const XMMATRIX& worldmatrix);
 		~Model();
 
 		void OnInit() override;

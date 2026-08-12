@@ -50,7 +50,7 @@ void Engine::ImGuiLayer::OnRender()
 
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowPos(ImVec2(1815, 0), ImGuiCond_Always);
+	/*ImGui::SetNextWindowPos(ImVec2(1815, 0), ImGuiCond_Always);
 	ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoBackground);
@@ -58,7 +58,7 @@ void Engine::ImGuiLayer::OnRender()
 	{
 		addShape = true;
 	}
-	ImGui::End();
+	ImGui::End();*/
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

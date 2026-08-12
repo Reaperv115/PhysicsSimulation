@@ -36,28 +36,28 @@ void App::Level::OnUpdate(float dt)
 	}
 	Engine::Camera::GetInstance()->OnUpdate(dt);
 
-	for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
+	/*for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
 	{
 		obj->OnUpdate(dt);
-	}
+	}*/
 
-	if (Engine::ImGuiLayer::AddShape())
+	/*if (Engine::ImGuiLayer::AddShape())
 	{
 		Engine::ObjSystem::GetInstance()->AddShape();
-	}
+	}*/
 }
 
 void App::Level::OnRender()
 {
-	for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
+	/*for (auto& obj : Engine::ObjSystem::GetInstance()->GetObjects())
 	{
 		Engine::Renderer::DrawPrimitive(*obj);
-	}
+	}*/
 
-	for (auto& star : Primitives::stars)
+	/*for (auto& star : Primitives::stars)
 	{
 		Engine::Renderer::DrawPrimitive(*star);
-	}
+	}*/
 
 	for (auto& model : Engine::ObjSystem::GetInstance()->GetModels())
 	{

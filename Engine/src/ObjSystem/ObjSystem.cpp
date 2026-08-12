@@ -5,7 +5,7 @@ Engine::ObjSystem* Engine::ObjSystem::instance = nullptr;
 
 void Engine::ObjSystem::Initialize()
 {
-	Primitives::CreateStarField();
+	//Primitives::CreateStarField();
 	InitializeScene();
 
 }
@@ -23,7 +23,11 @@ void Engine::ObjSystem::InitializeScene()
 	objects.push_back(CreateUnique<Primitives::Square>());*/
 	//objects.push_back(CreateUnique<Primitives::Cube>());
 
-	auto model = CreateUnique<Model>("src/Models/blender_adam.obj");
-	model->OnInit();
-	models.push_back(std::move(model));
+	auto adam = CreateUnique<Model>("src/Models/blender_adam.obj", XMMatrixTranslationFromVector(XMVectorSet(-1.0f, 0.0f, 0.0f, 1.0f)));
+	adam->OnInit();
+	models.push_back(std::move(adam));
+
+	auto eve = CreateUnique<Model>("src/Models/blender_eve.obj", XMMatrixTranslationFromVector(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f)));
+	eve->OnInit();
+	models.push_back(std::move(eve));
 }
