@@ -152,6 +152,7 @@
     <ClInclude Include="src\AppWindow.h" />
     <ClInclude Include="src\epch.h" />
     <ClInclude Include="src\Renderer\Primitives.h" />
+    <ClInclude Include="src\Renderer\SkyBox\DDSTextureLoader11.h" />
     <ClInclude Include="src\Renderer\SkyBox\SkyBox.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Renderer\VertexBufferLayout.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Entity\Transform.h" />
+    <ClInclude Include="src\Utils\StringConversion.h" />
     <ClInclude Include="src\vendor\imgui\imconfig.h" />
     <ClInclude Include="src\vendor\imgui\imgui.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_dx11.h" />
@@ -184,6 +186,7 @@
     <ClCompile Include="src\epch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Renderer\SkyBox\DDSTextureLoader11.cpp" />
     <ClCompile Include="src\Renderer\SkyBox\SkyBox.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Shaders\PixelShader.cpp" />

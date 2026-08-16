@@ -108,6 +108,12 @@
     <ClInclude Include="src\Renderer\SkyBox\SkyBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\SkyBox\DDSTextureLoader11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\StringConversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AppWindow.cpp">
@@ -183,6 +189,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\SkyBox\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\SkyBox\DDSTextureLoader11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

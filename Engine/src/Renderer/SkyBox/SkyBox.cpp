@@ -34,7 +34,11 @@ Engine::SkyBox::SkyBox()
 	verts[22] = Primitives::Vertex(-5.0f, -5.0f, 5.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 	verts[23] = Primitives::Vertex(5.0f, -5.0f, 5.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 	constantBuffer.Create(GraphicsContext::GetDevice(), &worldmatrix);
-	//vertexshader
+	vertexshader = VertexShader("src/Shaders/VertexShader.hlsl");
+	pixelshader = PixelShader("src/Shaders/PixelShader.hlsl");
+
+	vertexBuffer = VertexBuffer(verts, sizeof(Primitives::Vertex), 24);
+	indexBuffer = IndexBuffer(indices, sizeof(uint16_t), 36);
 }
 
 Engine::SkyBox::~SkyBox()

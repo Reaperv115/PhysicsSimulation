@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(PhysicsEngine)
+project(First_Person_Shooter)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -36,8 +36,8 @@ file(GLOB_RECURSE APP_SOURCES
     "APP/src/**/*.cpp"
 )
 
-add_executable(PhysicsSimulation %{APP_SOURCES})
+add_executable(First_Person_Shooter %{APP_SOURCES})
 
-target_link_libraries(PhysicsSimulation PRIVATE Engine)
+target_link_libraries(First_Person_Shooter PRIVATE Engine)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PhysicsSimulation)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT First_Person_Shooter)

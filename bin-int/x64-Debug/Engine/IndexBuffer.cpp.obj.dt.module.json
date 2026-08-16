@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\IndexBuffer.obj",
+            "outputs": [
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\IndexBuffer.cpp.obj.dt.module.json",
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\IndexBuffer.cpp.obj.dt.d.json",
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\Engine.pch"
+            ],
+            "requires": []
+        }
+    ]
+}

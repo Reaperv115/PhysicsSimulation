@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\DDSTextureLoader11.obj",
+            "outputs": [
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\DDSTextureLoader11.h.obj.dt.module.json",
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\DDSTextureLoader11.h.obj.dt.d.json",
+                "C:\\Dev\\PhysicsEngine\\bin-int\\x64-Debug\\Engine\\Engine.pch"
+            ],
+            "requires": []
+        }
+    ]
+}

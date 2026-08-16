@@ -33,9 +33,6 @@ void Engine::Model::OnInit()
 
 	vertexbuffer = VertexBuffer(vertices.data(), sizeof(Primitives::Vertex), vertices.size());
 	indexbuffer = IndexBuffer(indices.data(), sizeof(uint16_t), indices.size());
-
-
-	//XMStoreFloat4x4(&transform.worldmatrix, XMMatrixIdentity());
 }
 
 void Engine::Model::OnUpdate(float dt)

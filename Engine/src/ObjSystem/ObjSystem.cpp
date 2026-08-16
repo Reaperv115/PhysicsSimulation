@@ -27,7 +27,10 @@ void Engine::ObjSystem::InitializeScene()
 	adam->OnInit();
 	models.push_back(std::move(adam));
 
-	auto eve = CreateUnique<Model>("src/Models/blender_eve.obj", XMMatrixTranslationFromVector(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f)));
+	/*XMMATRIX scalematrix = XMMatrixScaling(-1.0f, 1.0f, 1.0f);
+	XMMATRIX transmatrix = XMMatrixTranslationFromVector(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
+	XMMATRIX combined = scalematrix * transmatrix;*/
+	auto eve = CreateUnique<Model>("src/Models/blender_eve_rigged.obj", XMMatrixTranslationFromVector(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f)));
 	eve->OnInit();
 	models.push_back(std::move(eve));
 }

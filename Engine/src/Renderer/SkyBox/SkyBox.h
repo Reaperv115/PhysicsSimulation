@@ -3,6 +3,7 @@
 #include <wrl.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include "DDSTextureLoader11.h"
 
 #include "../Primitives.h"
 #include "../VertexBuffer.h"
